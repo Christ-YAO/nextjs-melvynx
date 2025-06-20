@@ -5,7 +5,6 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
-  import { PageLayout } from "@/layout";
   import { VIDEOS } from "@app/formations/data";
   import Link from "next/link";
   
@@ -27,7 +26,6 @@ import {
     }
   
     return (
-      <PageLayout>
         <Card>
           <CardHeader>
             <CardTitle>{lesson?.title}</CardTitle>
@@ -42,7 +40,6 @@ import {
             </Link>
           </CardFooter>
         </Card>
-      </PageLayout>
     );
   }
   

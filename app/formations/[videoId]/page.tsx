@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PageLayout } from "@/layout";
 import React from "react";
 import { VIDEOS } from "../data";
 import Link from "next/link";
@@ -22,7 +21,6 @@ export default async function Page(props: {
   }
 
   return (
-    <PageLayout>
       <Card>
         <CardHeader>
           <CardTitle>{video?.title}</CardTitle>
@@ -39,12 +37,11 @@ export default async function Page(props: {
         <CardFooter>
           <Link
             className="bg-accent py-1 px-3 rounded transition-all hover:bg-accent-foreground/20"
-            href={`/formations/${video.id}`}
+            href={`/formations`}
           >
             Back
           </Link>
         </CardFooter>
       </Card>
-    </PageLayout>
   );
 }

@@ -5,14 +5,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PageLayout } from "@/layout";
 import Link from "next/link";
 import React from "react";
 import { VIDEOS } from "./data";
 
 export default function Page() {
   return (
-    <PageLayout>
       <Card>
         <CardHeader>
           <CardTitle>Plan de formation</CardTitle>
@@ -38,6 +36,5 @@ export default function Page() {
           </Link>
         </CardFooter>
       </Card>
-    </PageLayout>
   );
 }
