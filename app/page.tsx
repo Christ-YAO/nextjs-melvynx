@@ -1,9 +1,18 @@
 import { ThemeToggle } from "@/components/theme-toggle";
+import { PageLayout } from "@/layout";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <PageLayout>
+      <div>
+        <h1 className="text-2xl font-bold">Learn Next.js with Prisma</h1>
+        <div className="bg-foreground w-[50px] h-[5px]"></div>
+      </div>
+      <Link href="/formations" className="text-indigo-500 underline">
+        Plan de formation
+      </Link>
       <ThemeToggle />
-    </div>
+    </PageLayout>
   );
 }
