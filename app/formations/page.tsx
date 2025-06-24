@@ -22,7 +22,7 @@ export default async function Page() {
           {VIDEOS.map((video) => (
             <div key={video.id}>
               <Link
-                href={`/formations/${video.id}`}
+                href={`/formations/video/${video.id}`}
                 className="text-indigo-500 underline"
               >
                 {video.title}

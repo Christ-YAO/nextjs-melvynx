@@ -7,6 +7,27 @@ import {
 } from "@/components/ui/card";
 import { VIDEOS } from "@app/formations/data";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+// Return a list of `params` to populate the [slug] dynamic segment
+export async function generateStaticParams() {
+  const videos = VIDEOS;
+
+  const result = videos.flatMap((video) => {
+    const params = video.lessons.map((lesson) => ({
+      videoId: video.id,
+      lessonId: lesson.id,
+    }));
+
+    return params;
+  });
+
+  console.log("results =>", result);
+
+  return result;
+}
+
+export const dynamic = "force-static ";
 
 export default async function Page(props: {
   params: { videoId: string; lessonId: string };
@@ -24,8 +45,7 @@ export default async function Page(props: {
   const lesson = video.lessons.find((lesson) => lesson.id === params.lessonId);
 
   if (!lesson) {
-    throw new Error("Invalid lesson!");
-    return <p>Invalid lesson</p>;
+    notFound();
   }
 
   return (
@@ -37,7 +57,7 @@ export default async function Page(props: {
       <CardFooter>
         <Link
           className="bg-accent py-1 px-3 rounded transition-all hover:bg-accent-foreground/20"
-          href={`/formations/${video.id}`}
+          href={`/formations/video/${video.id}`}
         >
           Back
         </Link>

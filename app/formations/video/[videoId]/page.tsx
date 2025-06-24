@@ -6,8 +6,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import React from "react";
-import { VIDEOS } from "../data";
+import { VIDEOS } from "../../data";
 import Link from "next/link";
+
+// Return a list of `params` to populate the [slug] dynamic segment
+export async function generateStaticParams() {
+  const videos = VIDEOS;
+
+  const result = videos.map((video) => ({ videoId: video.id }));
+
+  console.log("result =>", result);
+
+  return result;
+}
 
 export default async function Page(props: {
   params: Promise<{ videoId: string }>;
@@ -32,7 +43,7 @@ export default async function Page(props: {
           {video?.lessons.map((lesson) => (
             <li key={lesson.id}>
               <Link
-                href={`/formations/${video.id}/lesson/${lesson.id}`}
+                href={`/formations/video/${video.id}/lesson/${lesson.id}`}
                 className="transition-all hover:underline"
               >
                 {lesson.title}
