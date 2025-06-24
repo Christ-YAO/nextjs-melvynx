@@ -9,7 +9,10 @@ import Link from "next/link";
 import React from "react";
 import { VIDEOS } from "./data";
 
-export default function Page() {
+export default async function Page() {
+
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  
   return (
       <Card>
         <CardHeader>

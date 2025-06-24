@@ -10,7 +10,7 @@ export default async function Layout(
   const video = VIDEOS.find((video) => video.id === params.videoId);
 
   if (!video) {
-    throw new Error("Invalid video")
+    throw new Error("Invalid video");
     return <p>Invalid video</p>;
   }
 

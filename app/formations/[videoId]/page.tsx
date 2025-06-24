@@ -16,6 +16,8 @@ export default async function Page(props: {
 
   const video = VIDEOS.find((video) => video.id === params.videoId);
 
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
   if (!video) {
     return <p>Invalid video</p>;
   }
