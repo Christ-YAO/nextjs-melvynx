@@ -8,6 +8,7 @@ import {
 import React from "react";
 import { VIDEOS } from "../../data";
 import Link from "next/link";
+import { Metadata } from "next";
 
 // Return a list of `params` to populate the [slug] dynamic segment
 export async function generateStaticParams() {
@@ -20,9 +21,21 @@ export async function generateStaticParams() {
   return result;
 }
 
-export default async function Page(props: {
+type PageProps = {
   params: Promise<{ videoId: string }>;
-}) {
+};
+
+export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
+  const params = await props.params;
+
+  const video = VIDEOS.find((video) => video.id === params.videoId);
+
+  return {
+    title: `Video - ${video?.title}`,
+  };
+};
+
+export default async function Page(props: PageProps) {
   const params = await props.params;
 
   const video = VIDEOS.find((video) => video.id === params.videoId);

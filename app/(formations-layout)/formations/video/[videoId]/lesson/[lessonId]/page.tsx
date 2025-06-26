@@ -5,7 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { VIDEOS } from "@app/formations/data";
+import { VIDEOS } from "@app/(formations-layout)/formations/data";
+import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -22,16 +23,27 @@ export async function generateStaticParams() {
     return params;
   });
 
-  console.log("results =>", result);
-
   return result;
 }
 
-export const dynamic = "force-static ";
+export const dynamic = "force-static";
 
-export default async function Page(props: {
-  params: { videoId: string; lessonId: string };
-}) {
+type PageProps = {
+  params: Promise<{ videoId: string; lessonId: string }>;
+};
+
+export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
+  const params = await props.params;
+
+  const video = VIDEOS.find((video) => video.id === params.videoId);
+  const lesson = video?.lessons.find((lesson) => lesson.id === params.lessonId);
+
+  return {
+    title: `${video?.title} - ${lesson?.title}`,
+  };
+};
+
+export default async function Page(props: PageProps) {
   const params = await props.params;
 
   const video = VIDEOS.find((video) => video.id === params.videoId);
