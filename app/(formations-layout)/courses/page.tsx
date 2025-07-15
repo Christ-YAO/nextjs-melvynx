@@ -12,6 +12,9 @@ import Counter from "./counter";
 import { userAgent } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { UserRound } from "lucide-react";
+import { SelectStar } from "./select-star";
+import { revalidatePath } from "next/cache";
 
 type User = {
   id: number;
@@ -48,6 +51,21 @@ export default async function Page() {
 
   const reviews = await prisma.review.findMany();
 
+  const setNewStar = async (reviewId: string, star: number) => {
+    "use server";
+
+    await prisma.review.update({
+      where: {
+        id: reviewId,
+      },
+      data: {
+        star,
+      },
+    });
+
+    revalidatePath("/courses");
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -55,12 +73,25 @@ export default async function Page() {
         <CardDescription>{userAgentList.browser?.name}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Counter />
-        <ul className="list-disc list-inside">
-          {reviews.map((review) => (
-            <li key={review.id}>{review.name}</li>
-          ))}
-        </ul>
+        {reviews.map((review) => (
+          <Card className="gap-2" key={review.id}>
+            <CardHeader>
+              <div className="flex items-center gap-1">
+                <SelectStar
+                  star={review.star}
+                  setNewStar={setNewStar.bind(null, review.id)}
+                />
+              </div>
+              <CardTitle className="flex items-end gap-2">
+                <UserRound className="size-4" />
+                {review.name}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-foreground/70 text-sm">
+              {review.review}
+            </CardContent>
+          </Card>
+        ))}
       </CardContent>
       <CardFooter>
         <Link
