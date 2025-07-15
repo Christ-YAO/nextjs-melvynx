@@ -2,18 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader, LoaderCircle, Star } from "lucide-react";
-import { useState } from "react";
+import { LoaderCircle, Star } from "lucide-react";
+import { useState, useTransition } from "react";
 
 export const SelectStar = (props: {
   star: number;
-  setNewStar: (star: number) => void;
+  setReviewStar: (star: number) => void;
 }) => {
+  const [isPending, startTransition] = useTransition();
+
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   return (
     <div className="flex items-center gap-2 mb-2">
-      {loading ? (
+      {isPending ? (
         <span className="text-foreground/20">
           <LoaderCircle className="size-5 animate-spin" />
         </span>
@@ -31,10 +32,10 @@ export const SelectStar = (props: {
                 onMouseLeave={() => {
                   setHoverIndex(null);
                 }}
-                onClick={async () => {
-                  setLoading(true);
-                  await props.setNewStar(i + 1);
-                  setLoading(false);
+                onClick={() => {
+                  startTransition(async () => {
+                    await props.setReviewStar(i + 1);
+                  });
                   setHoverIndex(null);
                 }}
               >

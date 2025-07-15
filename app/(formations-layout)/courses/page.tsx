@@ -15,6 +15,7 @@ import { prisma } from "@/lib/prisma";
 import { UserRound } from "lucide-react";
 import { SelectStar } from "./select-star";
 import { revalidatePath } from "next/cache";
+import { UpdateTitleForm } from "./edit-title";
 
 type User = {
   id: number;
@@ -51,7 +52,7 @@ export default async function Page() {
 
   const reviews = await prisma.review.findMany();
 
-  const setNewStar = async (reviewId: string, star: number) => {
+  const setReviewStar = async (reviewId: string, star: number) => {
     "use server";
 
     await prisma.review.update({
@@ -60,6 +61,26 @@ export default async function Page() {
       },
       data: {
         star,
+      },
+    });
+
+    revalidatePath("/courses");
+  };
+
+  const setReviewName = async (reviewId: string, name: string) => {
+    "use server";
+
+    if (name === "error") {
+      revalidatePath("/courses");
+      return;
+    }
+
+    await prisma.review.update({
+      where: {
+        id: reviewId,
+      },
+      data: {
+        name,
       },
     });
 
@@ -79,12 +100,17 @@ export default async function Page() {
               <div className="flex items-center gap-1">
                 <SelectStar
                   star={review.star}
-                  setNewStar={setNewStar.bind(null, review.id)}
+                  setReviewStar={setReviewStar.bind(null, review.id)}
                 />
               </div>
-              <CardTitle className="flex items-end gap-2">
+              <CardTitle className="flex items-center gap-2">
                 <UserRound className="size-4" />
-                {review.name}
+                <UpdateTitleForm
+                  setReviewName={setReviewName.bind(null, review.id)}
+                  className="font-bold"
+                >
+                  {review.name.trim().length > 0 ? review.name : "NaN"}
+                </UpdateTitleForm>
               </CardTitle>
             </CardHeader>
             <CardContent className="text-foreground/70 text-sm">
