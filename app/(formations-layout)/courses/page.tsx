@@ -11,6 +11,31 @@ import Link from "next/link";
 import Counter from "./counter";
 import { userAgent } from "next/server";
 import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
+
+type User = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address: {
+    street: string;
+    suite: string;
+    city: string;
+    zipcode: string;
+    geo: {
+      lat: string;
+      lng: string;
+    };
+  };
+  phone: string;
+  website: string;
+  company: {
+    name: string;
+    catchPhrase: string;
+    bs: string;
+  };
+};
 
 export const metadata: Metadata = {
   title: "Courses!",
@@ -21,13 +46,8 @@ export default async function Page() {
     headers: await headers(),
   });
 
-  const users = await fetch("https://jsonplaceholder.typicode.com/users").then(
-    (response) => response.json()
-  );
-  console.log('users', users);
-  
+  const reviews = await prisma.review.findMany();
 
-  // console.log("userAgentList ==>", userAgentList);
   return (
     <Card>
       <CardHeader>
@@ -36,10 +56,10 @@ export default async function Page() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Counter />
-        <ul>
-          {users.map(user => {
-            <li key={user.id}>{user.name}</li>
-          })}
+        <ul className="list-disc list-inside">
+          {reviews.map((review) => (
+            <li key={review.id}>{review.name}</li>
+          ))}
         </ul>
       </CardContent>
       <CardFooter>
