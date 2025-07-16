@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Metadata } from "next";
 import Link from "next/link";
-import Counter from "./counter";
 import { userAgent } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
@@ -16,6 +15,10 @@ import { UserRound } from "lucide-react";
 import { SelectStar } from "./select-star";
 import { revalidatePath } from "next/cache";
 import { UpdateTitleForm } from "./edit-title";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 type User = {
   id: number;
@@ -104,7 +107,7 @@ export default async function Page() {
                 />
               </div>
               <CardTitle className="flex items-center gap-2">
-                <UserRound className="size-4" />
+                <UserRound className="size-7 bg-muted p-1.5 rounded-full" />
                 <UpdateTitleForm
                   setReviewName={setReviewName.bind(null, review.id)}
                   className="font-bold"
@@ -118,6 +121,38 @@ export default async function Page() {
             </CardContent>
           </Card>
         ))}
+        <hr />
+        <Card className="px-4">
+          <form
+            action={async (FormData) => {
+              "use server";
+
+              const name = FormData.get("name") as string;
+              const review = FormData.get("review") as string;
+
+              await prisma.review.create({
+                data: {
+                  name,
+                  review,
+                  star: 5,
+                },
+              });
+
+              revalidatePath("/courses");
+            }}
+            className="flex flex-col gap-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input name="name" id="name" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Review</Label>
+              <Textarea name="review" id="review" />
+            </div>
+            <Button type="submit">Submit</Button>
+          </form>
+        </Card>
       </CardContent>
       <CardFooter>
         <Link
