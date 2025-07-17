@@ -11,15 +11,22 @@ export default function DeleteReview(props: {
 }) {
   const [isPending, startTransition] = useTransition();
   return (
-    <Button
-      onClick={() => {
-        startTransition(async () => {
-          await props.setDeleteReview(props.reviewId);
-        });
-      }}
-      disabled={isPending}
-    >
-      {isPending ? <Loader className="text-muted" /> : <Trash2 size={16} />}
-    </Button>
+    <form>
+      <Button
+        // onClick={() => {
+        //   startTransition(async () => {
+        //     await props.setDeleteReview(props.reviewId);
+        //   });
+        // }}
+        formAction={() => {
+          startTransition(async () => {
+            await props.setDeleteReview(props.reviewId);
+          });
+        }}
+        disabled={isPending}
+      >
+        {isPending ? <Loader className="text-muted" /> : <Trash2 size={16} />}
+      </Button>
+    </form>
   );
 }

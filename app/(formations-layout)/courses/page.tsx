@@ -13,11 +13,16 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { UserRound } from "lucide-react";
 import { SelectStar } from "./select-star";
-import { revalidatePath } from "next/cache";
 import { UpdateTitleForm } from "./edit-title";
 import DeleteReview from "./delete-review";
-import CreateReview from "./create-review";
+import CreateReview from "./create-review-form";
 import { UpdateContentForm } from "./edit-Content";
+import {
+  setDeleteReview,
+  setReviewContent,
+  setReviewName,
+  setReviewStar,
+} from "@/lib/actions";
 
 type User = {
   id: number;
@@ -52,88 +57,11 @@ export default async function Page() {
     headers: await headers(),
   });
 
-  const reviews = await prisma.review.findMany();
-
-  const setReviewStar = async (reviewId: string, star: number) => {
-    "use server";
-
-    await prisma.review.update({
-      where: {
-        id: reviewId,
-      },
-      data: {
-        star,
-      },
-    });
-
-    revalidatePath("/courses");
-  };
-
-  const setReviewName = async (reviewId: string, name: string) => {
-    "use server";
-
-    if (name === "error") {
-      revalidatePath("/courses");
-      return;
-    }
-
-    await prisma.review.update({
-      where: {
-        id: reviewId,
-      },
-      data: {
-        name,
-      },
-    });
-
-    revalidatePath("/courses");
-  };
-
-  const setReviewContent = async (reviewId: string, content: string) => {
-    "use server";
-
-    if (content === "error") {
-      revalidatePath("/courses");
-      return;
-    }
-
-    await prisma.review.update({
-      where: {
-        id: reviewId,
-      },
-      data: {
-        review: content,
-      },
-    });
-
-    revalidatePath("/courses");
-  };
-
-  const setDeleteReview = async (reviewId: string) => {
-    "use server";
-
-    await prisma.review.delete({
-      where: {
-        id: reviewId,
-      },
-    });
-
-    revalidatePath("/courses");
-  };
-
-  const setAddReview = async (name: string, content: string) => {
-    "use server";
-
-    await prisma.review.create({
-      data: {
-        name: name,
-        review: content,
-        star: 0,
-      },
-    });
-
-    revalidatePath("/courses");
-  };
+  const reviews = await prisma.review.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return (
     <Card>
@@ -170,7 +98,7 @@ export default async function Page() {
             <CardContent className="-mt-2 -mb-3">
               <UpdateContentForm
                 setReviewContent={setReviewContent.bind(null, review.id)}
-                 className="text-foreground/70 text-sm"
+                className="text-foreground/70 text-sm"
               >
                 {review.review.trim().length > 0 ? review.review : "..."}
               </UpdateContentForm>
@@ -179,7 +107,7 @@ export default async function Page() {
         ))}
         <hr />
         <Card className="px-4">
-          <CreateReview setAddReview={setAddReview.bind(null)} />
+          <CreateReview />
         </Card>
       </CardContent>
       <CardFooter>
