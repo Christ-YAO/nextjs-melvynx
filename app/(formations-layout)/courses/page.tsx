@@ -17,6 +17,7 @@ import { revalidatePath } from "next/cache";
 import { UpdateTitleForm } from "./edit-title";
 import DeleteReview from "./delete-review";
 import CreateReview from "./create-review";
+import { UpdateContentForm } from "./edit-Content";
 
 type User = {
   id: number;
@@ -88,6 +89,26 @@ export default async function Page() {
     revalidatePath("/courses");
   };
 
+  const setReviewContent = async (reviewId: string, content: string) => {
+    "use server";
+
+    if (content === "error") {
+      revalidatePath("/courses");
+      return;
+    }
+
+    await prisma.review.update({
+      where: {
+        id: reviewId,
+      },
+      data: {
+        review: content,
+      },
+    });
+
+    revalidatePath("/courses");
+  };
+
   const setDeleteReview = async (reviewId: string) => {
     "use server";
 
@@ -111,7 +132,7 @@ export default async function Page() {
       },
     });
 
-    revalidatePath("/courses")
+    revalidatePath("/courses");
   };
 
   return (
@@ -146,8 +167,13 @@ export default async function Page() {
                 </UpdateTitleForm>
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-foreground/70 text-sm">
-              {review.review}
+            <CardContent className="-mt-2 -mb-3">
+              <UpdateContentForm
+                setReviewContent={setReviewContent.bind(null, review.id)}
+                 className="text-foreground/70 text-sm"
+              >
+                {review.review.trim().length > 0 ? review.review : "..."}
+              </UpdateContentForm>
             </CardContent>
           </Card>
         ))}
