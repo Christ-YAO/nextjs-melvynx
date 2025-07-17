@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import Loader from "@/components/Loader";
 import { cn } from "@/lib/utils";
-import { LoaderCircle, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { useState, useTransition } from "react";
 
 export const SelectStar = (props: {
@@ -15,9 +15,7 @@ export const SelectStar = (props: {
   return (
     <div className="flex items-center gap-2 mb-2">
       {isPending ? (
-        <span className="text-foreground/20">
-          <LoaderCircle className="size-5 animate-spin" />
-        </span>
+        <Loader />
       ) : (
         <>
           {Array.from({ length: 5 }).map((_, i) => {

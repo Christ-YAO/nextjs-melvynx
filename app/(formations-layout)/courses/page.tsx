@@ -15,10 +15,8 @@ import { UserRound } from "lucide-react";
 import { SelectStar } from "./select-star";
 import { revalidatePath } from "next/cache";
 import { UpdateTitleForm } from "./edit-title";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import DeleteReview from "./delete-review";
+import CreateReview from "./create-review";
 
 type User = {
   id: number;
@@ -90,6 +88,32 @@ export default async function Page() {
     revalidatePath("/courses");
   };
 
+  const setDeleteReview = async (reviewId: string) => {
+    "use server";
+
+    await prisma.review.delete({
+      where: {
+        id: reviewId,
+      },
+    });
+
+    revalidatePath("/courses");
+  };
+
+  const setAddReview = async (name: string, content: string) => {
+    "use server";
+
+    await prisma.review.create({
+      data: {
+        name: name,
+        review: content,
+        star: 0,
+      },
+    });
+
+    revalidatePath("/courses")
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -98,7 +122,13 @@ export default async function Page() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {reviews.map((review) => (
-          <Card className="gap-2" key={review.id}>
+          <Card className="gap-2 relative" key={review.id}>
+            <div className="absolute right-4 top-4">
+              <DeleteReview
+                reviewId={review.id}
+                setDeleteReview={setDeleteReview.bind(null)}
+              />
+            </div>
             <CardHeader>
               <div className="flex items-center gap-1">
                 <SelectStar
@@ -123,35 +153,7 @@ export default async function Page() {
         ))}
         <hr />
         <Card className="px-4">
-          <form
-            action={async (FormData) => {
-              "use server";
-
-              const name = FormData.get("name") as string;
-              const review = FormData.get("review") as string;
-
-              await prisma.review.create({
-                data: {
-                  name,
-                  review,
-                  star: 5,
-                },
-              });
-
-              revalidatePath("/courses");
-            }}
-            className="flex flex-col gap-4"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input name="name" id="name" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="name">Review</Label>
-              <Textarea name="review" id="review" />
-            </div>
-            <Button type="submit">Submit</Button>
-          </form>
+          <CreateReview setAddReview={setAddReview.bind(null)} />
         </Card>
       </CardContent>
       <CardFooter>
