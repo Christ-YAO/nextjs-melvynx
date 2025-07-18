@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AddReviewSafeAction } from "@/lib/actions";
 import { useAction } from "next-safe-action/hooks";
+import { useRouter } from "next/navigation";
 import React, { ComponentProps, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
@@ -16,6 +17,17 @@ export default function CreateReview() {
   const { executeAsync, hasErrored, result, hasSucceeded } =
     useAction(AddReviewSafeAction);
 
+  const router = useRouter();
+
+  const AddNewReview = async (obj: { name: string; review: string }) => {
+    const result = await fetch("/api/reviews", {
+      method: "POST",
+      body: JSON.stringify(obj),
+    }).then((res) => res.json());
+
+    router.refresh();
+  };
+
   return (
     <form
       action={(FormData) => {
@@ -23,7 +35,7 @@ export default function CreateReview() {
         const review = FormData.get("content") as string;
 
         startTransition(async () => {
-          await executeAsync({ name, review });
+          await AddNewReview({ name, review });
         });
       }}
       className="flex flex-col gap-4"
