@@ -1,4 +1,3 @@
-import { ThemeToggle } from "@/components/theme-toggle";
 import { PageLayout } from "@/layout";
 import Link from "next/link";
 
@@ -15,7 +14,6 @@ export default function Home() {
       <Link href="/formations" className="text-indigo-500 underline">
         Plan de formation
       </Link>
-      <ThemeToggle />
     </PageLayout>
   );
 }
