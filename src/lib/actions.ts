@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "./prisma";
 import { actionClient, SafeError } from "./safe-action-client";
 import z from "zod";
+import { ReviewFormSchema } from "./review.schema";
 
 const setReviewStar = async (reviewId: string, star: number) => {
   await prisma.review.update({
@@ -80,12 +81,7 @@ const setDeleteReview = async (reviewId: string) => {
 // };
 
 const AddReviewSafeAction = actionClient
-  .schema(
-    z.object({
-      name: z.string(),
-      review: z.string(),
-    })
-  )
+  .schema(ReviewFormSchema)
   .action(async ({ parsedInput: input }) => {
     if (input.name === "méchant") {
       throw new SafeError("Invalid name");

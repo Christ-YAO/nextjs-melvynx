@@ -10,7 +10,19 @@ import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import React, { ComponentProps, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { ReviewFormSchema } from "@/lib/review.schema";
 
 export default function CreateReview() {
   const [isPending, startTransition] = useTransition();
@@ -19,52 +31,86 @@ export default function CreateReview() {
 
   const router = useRouter();
 
-  const AddNewReview = async (obj: { name: string; review: string }) => {
-    const result = await fetch("/api/reviews", {
-      method: "POST",
-      body: JSON.stringify(obj),
-    }).then((res) => res.json());
+  // const AddNewReview = async (obj: { name: string; review: string }) => {
+  //   const result = await fetch("/api/reviews", {
+  //     method: "POST",
+  //     body: JSON.stringify(obj),
+  //   }).then((res) => res.json());
 
+  //   router.refresh();
+  // };
+
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof ReviewFormSchema>>({
+    resolver: zodResolver(ReviewFormSchema),
+    defaultValues: {
+      name: "",
+      review: "",
+    },
+  });
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof ReviewFormSchema>) {
+    startTransition(async () => {
+      await executeAsync(values);
+      await form.reset();
+    });
     router.refresh();
-  };
+  }
 
   return (
-    <form
-      action={(FormData) => {
-        const name = FormData.get("name") as string;
-        const review = FormData.get("content") as string;
-
-        startTransition(async () => {
-          await AddNewReview({ name, review });
-        });
-      }}
-      className="flex flex-col gap-4"
-    >
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input name="name" id="name" disabled={isPending} required />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="content">Review</Label>
-        <Textarea name="content" id="content" disabled={isPending} required />
-      </div>
-      <SubmitButton type="submit" />
-      {hasErrored ? (
-        <p className="text-red-500 italic text-sm">{result.serverError}</p>
-      ) : null}
-
-      {hasSucceeded ? (
-        <p className="text-green-500 italic text-sm">Review created !</p>
-      ) : null}
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Patrick" {...field} disabled={isPending} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage className="italic text-xs" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="review"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Review</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="I love your courses."
+                  {...field}
+                  disabled={isPending}
+                />
+              </FormControl>
+              <FormDescription>
+                This is your public display review.
+              </FormDescription>
+              <FormMessage className="italic text-xs" />
+            </FormItem>
+          )}
+        />
+        <SubmitButton type="submit" isPending={isPending} />
+      </form>
+    </Form>
   );
 }
 
-const SubmitButton = (props: ComponentProps<typeof Button>) => {
-  const { pending } = useFormStatus();
+type SubmitButtonProps = ComponentProps<typeof Button> & {
+  isPending: boolean;
+};
+
+const SubmitButton = ({ isPending, ...rest }: SubmitButtonProps) => {
   return (
-    <Button {...props} disabled={props.disabled || pending}>
-      {pending ? <Loader className="text-muted" /> : "Submit"}
+    <Button {...rest} disabled={isPending} className="w-full">
+      {isPending ? <Loader className="text-muted" /> : "Submit"}
     </Button>
   );
 };
