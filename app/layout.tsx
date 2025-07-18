@@ -45,7 +45,7 @@ export default function RootLayout({
           <PageLayout>
             <Card>{children}</Card>
           </PageLayout>
-          <Toaster />
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>

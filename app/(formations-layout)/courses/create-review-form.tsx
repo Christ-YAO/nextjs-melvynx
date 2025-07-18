@@ -5,18 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AddReviewAction } from "@/lib/actions";
+import { AddReviewSafeAction } from "@/lib/actions";
+import { useAction } from "next-safe-action/hooks";
 import React, { ComponentProps, useTransition } from "react";
 import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 
 export default function CreateReview() {
   const [isPending, startTransition] = useTransition();
+  const { executeAsync, hasErrored, result, hasSucceeded } =
+    useAction(AddReviewSafeAction);
 
   return (
     <form
       action={(FormData) => {
+        const name = FormData.get("name") as string;
+        const review = FormData.get("content") as string;
+
         startTransition(async () => {
-          await AddReviewAction(FormData);
+          await executeAsync({ name, review });
         });
       }}
       className="flex flex-col gap-4"
@@ -30,6 +37,13 @@ export default function CreateReview() {
         <Textarea name="content" id="content" disabled={isPending} required />
       </div>
       <SubmitButton type="submit" />
+      {hasErrored ? (
+        <p className="text-red-500 italic text-sm">{result.serverError}</p>
+      ) : null}
+
+      {hasSucceeded ? (
+        <p className="text-green-500 italic text-sm">Review created !</p>
+      ) : null}
     </form>
   );
 }

@@ -39,11 +39,6 @@ export const UpdateContentForm = (props: {
           ref={ref}
           className={cn(props.className)}
           defaultValue={props.children}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              submit();
-            }
-          }}
         />
         <Button
           variant={"ghost"}
@@ -58,13 +53,13 @@ export const UpdateContentForm = (props: {
 
   return (
     <div className="group flex items-center gap-2">
-      <p
-        className={cn(props.className, {
+      <pre
+        className={cn("font-sans",props.className, {
           "animate-pulse": isPending,
         })}
       >
         {content}
-      </p>
+      </pre>
       <Button
         variant={"ghost"}
         className="group-hover:opacity-100 opacity-0 p-1"

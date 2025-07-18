@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "./prisma";
+import { actionClient, SafeError } from "./safe-action-client";
+import z from "zod";
 
 const setReviewStar = async (reviewId: string, star: number) => {
   await prisma.review.update({
@@ -62,23 +64,48 @@ const setDeleteReview = async (reviewId: string) => {
   revalidatePath("/courses");
 };
 
-const AddReviewAction = async (FormData: FormData) => {
-  const name = FormData.get("name") as string;
-  const content = FormData.get("content") as string;
+// const AddReviewAction = async (FormData: FormData) => {
+//   const name = FormData.get("name") as string;
+//   const content = FormData.get("content") as string;
 
-  await prisma.review.create({
-    data: {
-      name: name,
-      review: content,
-      star: 0,
-    },
+//   await prisma.review.create({
+//     data: {
+//       name: name,
+//       review: content,
+//       star: 0,
+//     },
+//   });
+
+//   revalidatePath("/courses");
+// };
+
+const AddReviewSafeAction = actionClient
+  .schema(
+    z.object({
+      name: z.string(),
+      review: z.string(),
+    })
+  )
+  .action(async ({ parsedInput: input }) => {
+    if (input.name === "méchant") {
+      throw new SafeError("Invalid name");
+    }
+
+    const newReview = await prisma.review.create({
+      data: {
+        name: input.name,
+        review: input.review,
+        star: 0,
+      },
+    });
+
+    revalidatePath("/courses");
+
+    return newReview;
   });
 
-  revalidatePath("/courses");
-};
-
 export {
-  AddReviewAction,
+  AddReviewSafeAction,
   setDeleteReview,
   setReviewContent,
   setReviewName,
