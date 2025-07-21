@@ -41,7 +41,8 @@ export function SignUpForm() {
   async function onSubmit(values: z.infer<typeof SignUpFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+
+    // console.log(values);
 
     await signUp.email(
       {

@@ -7,23 +7,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SignUpForm } from "./signup-form";
+import { SignInForm } from "./signin-form";
 import Link from "next/link";
 
 export default function SignUpPage() {
   return (
     <Card className="mx-12">
       <CardHeader>
-        <CardTitle>Sign Up</CardTitle>
+        <CardTitle>Sign In</CardTitle>
       </CardHeader>
       <CardContent>
-        <SignUpForm />
+        <SignInForm />
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted-foreground mx-auto">
-          Already have an account?{" "}
-          <Link href={"/auth/signin"} className="text-blue-600 hover:underline">
-            Sign in
+          Don't have an account?{" "}
+          <Link href={"/auth/signup"} className="text-blue-600 hover:underline">
+            Sign up
           </Link>
         </p>
       </CardFooter>

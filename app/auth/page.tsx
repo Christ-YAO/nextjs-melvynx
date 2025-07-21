@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUser } from "@/lib/auth-server";
+import { Check } from "lucide-react";
 import { unauthorized } from "next/navigation";
 import React from "react";
 
@@ -23,7 +24,10 @@ export default async function AuthPage() {
             <span>{user?.name}</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">Email</span>
+            <span className="text-sm text-muted-foreground flex gap-1 items-center">
+              Email
+              {user.emailVerified ? <Check size={14} /> : null}
+            </span>
             <span>{user?.email}</span>
           </div>
         </div>
