@@ -1,6 +1,9 @@
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUser } from "@/lib/auth-server";
-import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Check, Edit } from "lucide-react";
+import Link from "next/link";
 import { unauthorized } from "next/navigation";
 import React from "react";
 
@@ -13,9 +16,20 @@ export default async function AuthPage() {
 
   return (
     <Card className="mx-8">
-      <CardHeader>
-        <CardTitle>User Profile</CardTitle>
-        <div className="w-8 h-1 bg-accent-foreground"></div>
+      <CardHeader className="flex items-center justify-between gap-2 space-y-0">
+        <div>
+          <CardTitle>User Profile</CardTitle>
+          <div className="w-8 h-1 bg-accent-foreground"></div>
+        </div>
+        <Link
+          href={"/auth/edit"}
+          className={cn(
+            "flex items-center gap-1",
+            buttonVariants({ size: "sm", variant: "outline" })
+          )}
+        >
+          <Edit className="text-muted-foreground text-sm" /> Edit
+        </Link>
       </CardHeader>
       <CardContent>
         <div className="grid gap-2">
