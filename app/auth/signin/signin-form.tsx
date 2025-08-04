@@ -18,6 +18,7 @@ import { signIn } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Github } from "lucide-react";
+import Link from "next/link";
 
 type ProviderEnum = Parameters<typeof signIn.social>[0]["provider"];
 
@@ -107,7 +108,15 @@ export function SignInForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                  <Link
+                    href={"/auth/forget-password"}
+                    className="text-muted-foreground text-sm italic hover:underline"
+                  >
+                    Forget password
+                  </Link>
+                </div>
                 <FormControl>
                   <Input type="password" placeholder="" {...field} />
                 </FormControl>
