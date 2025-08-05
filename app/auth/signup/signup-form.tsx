@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { SubmitButton } from "@/components/submit-button";
+import { useTransition } from "react";
 
 const SignUpFormSchema = z.object({
   name: z.string().min(2),
@@ -26,6 +27,7 @@ const SignUpFormSchema = z.object({
 
 export function SignUpForm() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
@@ -38,28 +40,30 @@ export function SignUpForm() {
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof SignUpFormSchema>) {
+  function onSubmit(values: z.infer<typeof SignUpFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
     // console.log(values);
 
-    await signUp.email(
-      {
-        name: values.name,
-        email: values.email,
-        password: values.password,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Singing Up Successfully !");
-          router.push("/auth");
+    startTransition(async () => {
+      await signUp.email(
+        {
+          name: values.name,
+          email: values.email,
+          password: values.password,
         },
-        onError: (error) => {
-          toast.error(error.error.message);
-        },
-      }
-    );
+        {
+          onSuccess: () => {
+            toast.success("Singing Up Successfully !");
+            router.push("/auth");
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
+        }
+      );
+    });
   }
 
   return (
@@ -107,7 +111,9 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <SubmitButton isPending={isPending} type="submit">
+          Submit
+        </SubmitButton>
       </form>
     </Form>
   );

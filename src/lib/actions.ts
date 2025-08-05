@@ -16,12 +16,12 @@ const setReviewStar = async (reviewId: string, star: number) => {
     },
   });
 
-  revalidatePath("/courses");
+  revalidatePath("/reviews");
 };
 
 const setReviewName = async (reviewId: string, name: string) => {
   if (name === "error") {
-    revalidatePath("/courses");
+    revalidatePath("/reviews");
     return;
   }
 
@@ -34,12 +34,12 @@ const setReviewName = async (reviewId: string, name: string) => {
     },
   });
 
-  revalidatePath("/courses");
+  revalidatePath("/reviews");
 };
 
 const setReviewContent = async (reviewId: string, content: string) => {
   if (content === "error") {
-    revalidatePath("/courses");
+    revalidatePath("/reviews");
     return;
   }
 
@@ -52,7 +52,7 @@ const setReviewContent = async (reviewId: string, content: string) => {
     },
   });
 
-  revalidatePath("/courses");
+  revalidatePath("/reviews");
 };
 
 const setDeleteReview = async (reviewId: string) => {
@@ -62,7 +62,7 @@ const setDeleteReview = async (reviewId: string) => {
     },
   });
 
-  revalidatePath("/courses");
+  revalidatePath("/reviews");
 };
 
 // const AddReviewAction = async (FormData: FormData) => {
@@ -77,7 +77,7 @@ const setDeleteReview = async (reviewId: string) => {
 //     },
 //   });
 
-//   revalidatePath("/courses");
+//   revalidatePath("/reviews");
 // };
 
 const AddReviewSafeAction = actionClient
@@ -95,7 +95,7 @@ const AddReviewSafeAction = actionClient
       },
     });
 
-    revalidatePath("/courses");
+    revalidatePath("/reviews");
 
     return newReview;
   });
