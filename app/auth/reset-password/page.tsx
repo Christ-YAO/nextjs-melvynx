@@ -11,27 +11,35 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import React, { useTransition } from "react";
+import { useTransition } from "react";
 import { toast } from "sonner";
 
-export default function AuthPage() {
+export default function ResetPassword() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") as string | null;
 
   function onSubmit(formData: FormData) {
-    const email = formData.get("email");
+    const password = formData.get("password") as string;
+
+    if (!token) {
+      toast.error("Invalid token");
+      return;
+    }
 
     startTransition(async () => {
-      await authClient.forgetPassword(
+      await authClient.resetPassword(
         {
-          email: email as string,
-          redirectTo: "/auth/reset-password",
+          newPassword: password,
+          token,
         },
         {
           onSuccess: () => {
-            router.push(`/auth/verify?email=${email}`);
-            router.refresh();
+            router.push("/auth/signin");
+            toast.success("Password reseted successfully!");
           },
           onError: (error) => {
             toast.error(error.error.message);
@@ -42,21 +50,16 @@ export default function AuthPage() {
   }
 
   return (
-    <Card className="mx-8">
+    <Card className="mx-12">
       <CardHeader>
-        <div>
-          <CardTitle>Reset password</CardTitle>
-          <div className="w-8 h-1 bg-accent-foreground mb-3"></div>
-          <CardDescription>
-            Enter your email and we'll send you a link to reset your password.
-          </CardDescription>
-        </div>
+        <CardTitle>Reset Password</CardTitle>
+        <CardDescription>{token}</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={onSubmit} className="flex flex-col gap-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input type="email" id="email" name="email" />
+            <Label htmlFor="password">New Password</Label>
+            <Input id="password" name="password" />
           </div>
           <SubmitButton isPending={isPending} type="submit">
             Reset Password

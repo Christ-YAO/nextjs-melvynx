@@ -19,6 +19,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Github } from "lucide-react";
 import Link from "next/link";
+import { useTransition } from "react";
+import Loader from "@/components/Loader";
 
 type ProviderEnum = Parameters<typeof signIn.social>[0]["provider"];
 
@@ -29,6 +31,7 @@ const SignInFormSchema = z.object({
 
 export function SignInForm() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignInFormSchema>>({
@@ -40,28 +43,30 @@ export function SignInForm() {
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof SignInFormSchema>) {
+  function onSubmit(values: z.infer<typeof SignInFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
     // console.log(values);
 
-    await signIn.email(
-      {
-        email: values.email,
-        password: values.password,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Singing In Successfully !");
-          router.push("/auth");
-          router.refresh();
+    startTransition(async () => {
+      await signIn.email(
+        {
+          email: values.email,
+          password: values.password,
         },
-        onError: (error) => {
-          toast.error(error.error.message);
-        },
-      }
-    );
+        {
+          onSuccess: () => {
+            toast.success("Singing In Successfully !");
+            router.push("/auth");
+            router.refresh();
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
+        }
+      );
+    });
   }
 
   async function signInWithProvider(provider: string) {
@@ -124,7 +129,9 @@ export function SignInForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? <Loader className="text-muted" /> : "Submit"}
+          </Button>
         </form>
         <p className="text-muted-foreground text-sm">Or</p>
         <div className="flex w-full gap-4">

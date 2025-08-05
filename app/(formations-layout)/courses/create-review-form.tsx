@@ -1,9 +1,6 @@
 "use client";
 
-import Loader from "@/components/Loader";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AddReviewSafeAction } from "@/lib/actions";
 import { useAction } from "next-safe-action/hooks";
@@ -23,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ReviewFormSchema } from "@/lib/review.schema";
+import { SubmitButton } from "@/components/submit-button";
 
 export default function CreateReview() {
   const [isPending, startTransition] = useTransition();
@@ -102,15 +100,3 @@ export default function CreateReview() {
     </Form>
   );
 }
-
-type SubmitButtonProps = ComponentProps<typeof Button> & {
-  isPending: boolean;
-};
-
-const SubmitButton = ({ isPending, ...rest }: SubmitButtonProps) => {
-  return (
-    <Button {...rest} disabled={isPending} className="w-full">
-      {isPending ? <Loader className="text-muted" /> : "Submit"}
-    </Button>
-  );
-};

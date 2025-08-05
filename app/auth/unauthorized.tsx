@@ -3,7 +3,7 @@ import React from "react";
 
 export default function UnauthorizedPage() {
   return (
-    <Alert>
+    <Alert  className="w-fit mx-auto sm:min-w-lg">
       <AlertTitle>You need to be logged to see this page.</AlertTitle>
     </Alert>
   );
