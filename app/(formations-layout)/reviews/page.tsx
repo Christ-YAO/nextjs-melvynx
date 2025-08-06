@@ -18,6 +18,7 @@ import DeleteReview from "./delete-review";
 import CreateReview from "./create-review-form";
 import { UpdateContentForm } from "./edit-Content";
 import { getUser } from "@/lib/auth-server";
+import { Input } from "@/components/ui/input";
 
 type User = {
   id: number;
@@ -70,6 +71,14 @@ export default async function Page() {
         <CardDescription>{userAgentList.browser?.name}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Share review link</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input value={`http://localhost:3000/post-review/${user?.id}`} />
+          </CardContent>
+        </Card>
         {reviews.map((review) => (
           <Card className="gap-2 relative" key={review.id}>
             {user && user?.id === review.userId ? (
