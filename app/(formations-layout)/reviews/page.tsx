@@ -55,6 +55,9 @@ export default async function Page() {
   });
 
   const reviews = await prisma.review.findMany({
+    // where: {
+    //   userId: user?.id,
+    // },
     orderBy: {
       createdAt: "desc",
     },
@@ -69,20 +72,26 @@ export default async function Page() {
       <CardContent className="flex flex-col gap-4">
         {reviews.map((review) => (
           <Card className="gap-2 relative" key={review.id}>
-            <div className="absolute right-4 top-4">
-              <DeleteReview reviewId={review.id} />
-            </div>
+            {user && user?.id === review.userId ? (
+              <div className="absolute right-4 top-4">
+                <DeleteReview reviewId={review.id} />
+              </div>
+            ) : null}
             <CardHeader>
               <div className="flex items-center gap-1">
                 <SelectStar
                   star={review.star}
                   reviewId={review.id}
+                  reviewUserId={review.userId}
+                  userId={user?.id}
                 />
               </div>
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="size-7 bg-muted p-1.5 rounded-full" />
                 <UpdateTitleForm
                   reviewId={review.id}
+                  reviewUserId={review.userId}
+                  userId={user?.id}
                   className="font-bold"
                 >
                   {review.name.trim().length > 0 ? review.name : "NaN"}
@@ -92,6 +101,8 @@ export default async function Page() {
             <CardContent className="-mt-2 -mb-3">
               <UpdateContentForm
                 reviewId={review.id}
+                reviewUserId={review.userId}
+                userId={user?.id}
                 className="text-foreground/70 text-sm"
               >
                 {review.review.trim().length > 0 ? review.review : "..."}

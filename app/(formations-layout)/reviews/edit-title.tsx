@@ -17,6 +17,8 @@ export const UpdateTitleForm = (props: {
   children: string;
   reviewId: string;
   className?: string;
+  userId: string | undefined;
+  reviewUserId: string;
 }) => {
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -70,18 +72,20 @@ export const UpdateTitleForm = (props: {
       >
         {title}
       </p>
-      <Button
-        variant={"ghost"}
-        className="group-hover:opacity-100 opacity-0 p-1"
-        onClick={() => {
-          setIsEditing(true);
-          setTimeout(() => {
-            ref.current?.focus();
-          }, 100);
-        }}
-      >
-        <Edit size={16} />
-      </Button>
+      {props.userId && props.userId === props.reviewId && (
+        <Button
+          variant={"ghost"}
+          className="group-hover:opacity-100 opacity-0 p-1"
+          onClick={() => {
+            setIsEditing(true);
+            setTimeout(() => {
+              ref.current?.focus();
+            }, 100);
+          }}
+        >
+          <Edit size={16} />
+        </Button>
+      )}
     </div>
   );
 };

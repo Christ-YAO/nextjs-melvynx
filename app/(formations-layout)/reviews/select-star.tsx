@@ -6,7 +6,12 @@ import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { useState, useTransition } from "react";
 
-export const SelectStar = (props: { star: number; reviewId: string }) => {
+export const SelectStar = (props: {
+  star: number;
+  reviewId: string;
+  userId: string | undefined;
+  reviewUserId: string;
+}) => {
   const [isPending, startTransition] = useTransition();
 
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
