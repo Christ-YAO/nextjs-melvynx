@@ -3,30 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { updateReviewAction } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { Check, Edit } from "lucide-react";
-import {
-  useOptimistic,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useOptimistic, useRef, useState, useTransition } from "react";
 
 export const UpdateContentForm = (props: {
   children: string;
-  setReviewContent: (newContent: string) => void;
+  reviewId: string;
   className?: string;
 }) => {
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const ref = useRef<HTMLTextAreaElement>(null);
 
-  const [content, setContent] = useOptimistic(props.children, () => "loading...");
+  const [content, setContent] = useOptimistic(
+    props.children,
+    () => "loading..."
+  );
 
   const submit = () => {
     setIsEditing(false);
     const newContent = ref.current?.value ?? "";
-    props.setReviewContent(newContent);
+    updateReviewAction({ reviewId: props.reviewId, review: newContent });
     startTransition(() => {
       setContent(newContent);
     });
@@ -39,6 +38,7 @@ export const UpdateContentForm = (props: {
           ref={ref}
           className={cn(props.className)}
           defaultValue={props.children}
+          name="content"
         />
         <Button
           variant={"ghost"}
@@ -54,7 +54,7 @@ export const UpdateContentForm = (props: {
   return (
     <div className="group flex items-center gap-2">
       <pre
-        className={cn("font-sans",props.className, {
+        className={cn("font-sans", props.className, {
           "animate-pulse": isPending,
         })}
       >

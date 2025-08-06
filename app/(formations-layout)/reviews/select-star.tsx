@@ -1,14 +1,12 @@
 "use client";
 
 import Loader from "@/components/Loader";
+import { updateReviewAction } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { useState, useTransition } from "react";
 
-export const SelectStar = (props: {
-  star: number;
-  setReviewStar: (star: number) => void;
-}) => {
+export const SelectStar = (props: { star: number; reviewId: string }) => {
   const [isPending, startTransition] = useTransition();
 
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -29,7 +27,10 @@ export const SelectStar = (props: {
             }}
             onClick={() => {
               startTransition(async () => {
-                await props.setReviewStar(i + 1);
+                await updateReviewAction({
+                  reviewId: props.reviewId,
+                  star: i + 1,
+                });
               });
               setHoverIndex(null);
             }}

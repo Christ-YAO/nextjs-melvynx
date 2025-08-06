@@ -1,32 +1,27 @@
 "use client";
 
 import Loader from "@/components/Loader";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/submit-button";
+import { setDeleteReview } from "@/lib/actions";
 import { Trash2 } from "lucide-react";
 import { useTransition } from "react";
 
 export default function DeleteReview(props: {
   reviewId: string;
-  setDeleteReview: (reviewId: string) => void;
 }) {
   const [isPending, startTransition] = useTransition();
   return (
     <form>
-      <Button
-        // onClick={() => {
-        //   startTransition(async () => {
-        //     await props.setDeleteReview(props.reviewId);
-        //   });
-        // }}
+      <SubmitButton
         formAction={() => {
           startTransition(async () => {
-            await props.setDeleteReview(props.reviewId);
+            await setDeleteReview({ reviewId: props.reviewId });
           });
         }}
-        disabled={isPending}
+        isPending={isPending}
       >
         {isPending ? <Loader className="text-muted" /> : <Trash2 size={16} />}
-      </Button>
+      </SubmitButton>
     </form>
   );
 }

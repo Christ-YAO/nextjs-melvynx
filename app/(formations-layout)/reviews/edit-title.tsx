@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { updateReviewAction } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { Check, Edit } from "lucide-react";
 import {
@@ -14,7 +15,7 @@ import {
 
 export const UpdateTitleForm = (props: {
   children: string;
-  setReviewName: (newName: string) => void;
+  reviewId: string;
   className?: string;
 }) => {
   const [isPending, startTransition] = useTransition();
@@ -26,7 +27,7 @@ export const UpdateTitleForm = (props: {
   const submit = () => {
     setIsEditing(false);
     const newName = ref.current?.value ?? "";
-    props.setReviewName(newName);
+    updateReviewAction({ reviewId: props.reviewId, name: newName });
     startTransition(() => {
       setTitle(newName);
     });
