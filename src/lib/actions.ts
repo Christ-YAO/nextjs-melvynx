@@ -9,6 +9,8 @@ import {
   UpadateReviewFormSchema,
 } from "./review.schema";
 import z from "zod";
+import { LIMITATIONS } from "./auth-plan";
+import { UserPlan } from "@prisma/client";
 
 const updateReviewAction = actionUser
   .schema(UpadateReviewFormSchema)
@@ -61,6 +63,29 @@ const AddReviewSafeAction = actionClient
   .action(async ({ parsedInput: input, ctx }) => {
     if (input.name === "méchant") {
       throw new SafeError("Invalid name");
+    }
+
+    const userPlan = await prisma.user.findUnique({
+      where: {
+        id: input.userId,
+      },
+      select: {
+        plan: true,
+      },
+    });
+
+    if (!userPlan) {
+      throw new SafeError("No user find");
+    }
+
+    const limit = LIMITATIONS[userPlan?.plan as UserPlan];
+
+    const currentReviewCount = await prisma.review.count({
+      where: { userId: input.userId },
+    });
+
+    if (currentReviewCount > limit.reviewLimit) {
+      throw new SafeError("Impossible to add more review. Ask owner to increase limitation.");
     }
 
     const newReview = await prisma.review.create({

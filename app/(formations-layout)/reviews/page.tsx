@@ -11,7 +11,7 @@ import Link from "next/link";
 import { userAgent } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { UserRound } from "lucide-react";
+import { Banknote, UserRound } from "lucide-react";
 import { SelectStar } from "./select-star";
 import { UpdateTitleForm } from "./edit-title";
 import DeleteReview from "./delete-review";
@@ -19,6 +19,10 @@ import CreateReview from "./create-review-form";
 import { UpdateContentForm } from "./edit-Content";
 import { getUser } from "@/lib/auth-server";
 import { Input } from "@/components/ui/input";
+import { unauthorized } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 type User = {
   id: number;
@@ -51,6 +55,10 @@ export const metadata: Metadata = {
 export default async function Page() {
   const user = await getUser();
 
+  if (!user) {
+    return unauthorized();
+  }
+
   const userAgentList = userAgent({
     headers: await headers(),
   });
@@ -64,6 +72,8 @@ export default async function Page() {
     },
   });
 
+  const isOffLimit = reviews.length >= user.limit.reviewLimit;
+
   return (
     <Card>
       <CardHeader>
@@ -76,7 +86,23 @@ export default async function Page() {
             <CardTitle>Share review link</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input value={`http://localhost:3000/post-review/${user?.id}`} />
+            {isOffLimit ? (
+              <Alert>
+                <Banknote />
+                <AlertTitle>Warning</AlertTitle>
+                <AlertDescription>
+                  Your review limit of {user.limit.reviewLimit} has been reached
+                  <Link
+                    href={"/auth/upgrade"}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-2")}
+                  >
+                    Upgrade
+                  </Link>
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Input value={`http://localhost:3000/post-review/${user?.id}`} />
+            )}
           </CardContent>
         </Card>
         {reviews.map((review) => (

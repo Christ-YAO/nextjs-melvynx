@@ -1,9 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
+import { cn } from "@/lib/utils";
 import { CheckCircle2Icon } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -38,11 +40,17 @@ export default async function RootePage(props: {
         <Alert className="border-green-700 text-green-700">
           <CheckCircle2Icon />
           <AlertTitle>Success! Your changes have been saved</AlertTitle>
-          <AlertDescription>
-            Thank you for your review !
-          </AlertDescription>
+          <AlertDescription>Thank you for your review !</AlertDescription>
         </Alert>
       </CardContent>
+      <CardFooter>
+        <Link
+          href={"/reviews"}
+          className={cn(buttonVariants({ variant: "secondary" }))}
+        >
+          Go to reviews
+        </Link>
+      </CardFooter>
     </Card>
   );
 }

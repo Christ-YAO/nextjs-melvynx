@@ -20,14 +20,24 @@ import {
 } from "@/components/ui/form";
 import { ReviewFormSchema } from "@/lib/review.schema";
 import { SubmitButton } from "@/components/submit-button";
+import { toast } from "sonner";
 
 export default function CreateReview(props: {
   userId: string;
   redirectUrl?: string;
 }) {
-  const [isPending, startTransition] = useTransition();
-  const { executeAsync, hasErrored, result, hasSucceeded } =
-    useAction(AddReviewSafeAction);
+  const { execute, isPending } = useAction(AddReviewSafeAction, {
+    onError: (error) => {
+      toast.error(error.error.serverError ?? "Impossible to add more review !");
+    },
+    onSuccess: () => {
+      router.refresh();
+      form.reset();
+      if (props.redirectUrl) {
+        router.push(props.redirectUrl);
+      }
+    },
+  });
 
   const router = useRouter();
 
@@ -51,15 +61,7 @@ export default function CreateReview(props: {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof ReviewFormSchema>) {
-    startTransition(async () => {
-      await executeAsync({ ...values, userId: props.userId });
-      await form.reset();
-    });
-    router.refresh();
-
-    if (props.redirectUrl) {
-      router.push(props.redirectUrl);
-    }
+    await execute({ ...values, userId: props.userId });
   }
 
   return (

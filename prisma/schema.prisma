@@ -38,8 +38,15 @@ model User {
   accounts      Account[]
 
   reviews       Review[]
+  plan          UserPlan @default(FREE)
+  stripeCustomerId String?
 
   @@map("user")
+}
+
+enum UserPlan {
+  FREE
+  PRO
 }
 
 
