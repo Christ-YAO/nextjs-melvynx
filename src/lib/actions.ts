@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "./prisma";
-import { actionUser, SafeError } from "./safe-action-client";
+import { actionClient, actionUser, SafeError } from "./safe-action-client";
 import {
   DeleteReviewFormSchema,
   ReviewFormSchema,
   UpadateReviewFormSchema,
 } from "./review.schema";
+import z from "zod";
 
 const updateReviewAction = actionUser
   .schema(UpadateReviewFormSchema)
@@ -55,8 +56,8 @@ const setDeleteReview = actionUser
 //   revalidatePath("/reviews");
 // };
 
-const AddReviewSafeAction = actionUser
-  .schema(ReviewFormSchema)
+const AddReviewSafeAction = actionClient
+  .schema(ReviewFormSchema.extend({ userId: z.string() }))
   .action(async ({ parsedInput: input, ctx }) => {
     if (input.name === "méchant") {
       throw new SafeError("Invalid name");
@@ -64,7 +65,7 @@ const AddReviewSafeAction = actionUser
 
     const newReview = await prisma.review.create({
       data: {
-        userId: ctx.user.id,
+        userId: input.userId,
         name: input.name,
         review: input.review,
         star: 0,

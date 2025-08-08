@@ -122,7 +122,7 @@ export default async function Page() {
         <hr />
         {user && (
           <Card className="px-4">
-            <CreateReview />
+            <CreateReview userId={user.id} />
           </Card>
         )}
       </CardContent>
